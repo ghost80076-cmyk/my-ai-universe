@@ -1,141 +1,252 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MYTHOS AI | 創作者原創角色宇宙</title>
-    <style>
-        :root { --bg: #0d0e12; --card-bg: #16181f; --accent: #d4af37; --text: #f4f4f5; --muted: #a1a1aa; }
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 850px; }
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #27272a; padding-bottom: 15px; margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-        .card { background: var(--card-bg); border: 1px solid #27272a; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: 0.2s; }
-        .card:hover { border-color: var(--accent); transform: translateY(-3px); }
-        .card-img { width: 100%; height: 180px; object-fit: cover; }
-        .card-body { padding: 15px; flex-grow: 1; }
-        .tag { background: #27272a; color: var(--accent); font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
-        
-        #chat-view { display: none; }
-        .control-bar { background: var(--card-bg); border: 1px solid #27272a; padding: 15px; border-radius: 10px; margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
-        .control-bar select, .control-bar input { background: #09090b; border: 1px solid #27272a; color: #fff; padding: 8px; border-radius: 6px; }
-        .chat-stream { background: #000; border: 1px solid #27272a; height: 420px; overflow-y: auto; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
-        .input-area { display: flex; gap: 10px; }
-        textarea { flex-grow: 1; background: var(--card-bg); border: 1px solid #27272a; color: #fff; padding: 10px; border-radius: 8px; height: 40px; resize: none; }
-        button { background: var(--accent); border: none; font-weight: bold; padding: 0 20px; border-radius: 8px; cursor: pointer; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BAO/LAB — Characters · Worlds · Experiments</title>
+  <link rel="stylesheet" href="css/base.css" />
 </head>
 <body>
-
-<div class="container">
-    <header>
-        <h2 style="color:var(--accent); margin:0;">⚡ MYTHOS PORTAL</h2>
-        <span style="font-size:12px; color:var(--muted);">LunaTalk Edition</span>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="brand" data-view="home">
+        <span class="brand-mark">BAO/</span>LAB
+      </button>
+      <nav class="nav">
+        <button data-view="home">首頁</button>
+        <button data-view="explore">作品</button>
+        <button data-view="about">關於我</button>
+      </nav>
     </header>
 
-    <div id="lobby-view">
-        <p style="color:var(--muted); font-size:14px;">選擇你想進行互動的原創角色：</p>
-        <div class="grid" id="character-list"></div>
-    </div>
-
-    <div id="chat-view">
-        <button onclick="showLobby()" style="background:none; color:var(--muted); border:none; cursor:pointer; margin-bottom:10px; padding:0;">← 返回角色大廳</button>
-        
-        <div class="control-bar">
-            <select id="model-select">
-                <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet (OpenRouter)</option>
-                <option value="deepseek/deepseek-chat">DeepSeek V3 (OpenRouter)</option>
-                <option value="openai/gpt-4o">GPT-4o (OpenRouter)</option>
-            </select>
-            <input type="password" id="user-key" placeholder="貼上您的 API Key..." style="flex-grow:1;">
+    <main>
+      <section id="home-view" class="view active">
+        <div class="hero">
+          <div class="hero-copy">
+            <div class="eyebrow">CHARACTERS · WORLDS · EXPERIMENTS</div>
+            <h1>不是只讓角色回話，<br>而是讓世界繼續運轉。</h1>
+            <p class="hero-text">
+              班長 / 肉包的 AI 角色與世界實驗室。長篇角色扮演、世界模擬、
+              NPC 自主性、HTML 互動與 BYOK 模型連接。
+            </p>
+            <div class="hero-actions">
+              <button class="primary" data-view="explore">探索作品</button>
+              <button class="secondary" data-view="about">關於作者</button>
+            </div>
+          </div>
+          <div class="hero-panel">
+            <div class="signal"></div>
+            <div class="panel-title">SYSTEM READY</div>
+            <div class="panel-row"><span>Play Mode</span><b>Immersive / World Sim</b></div>
+            <div class="panel-row"><span>API</span><b>BYOK</b></div>
+            <div class="panel-row"><span>Memory</span><b>Configurable</b></div>
+            <div class="panel-row"><span>Characters</span><b id="home-character-count">1</b></div>
+          </div>
         </div>
 
-        <div class="chat-stream" id="chat-stream"></div>
-
-        <div class="input-area">
-            <textarea id="user-input" placeholder="輸入行動或對話..."></textarea>
-            <button onclick="sendMessage()">發送</button>
+        <div class="feature-grid">
+          <article><span>01</span><h3>自由模型</h3><p>官方 API、自訂中轉站與 OpenAI-compatible 介面預留。</p></article>
+          <article><span>02</span><h3>兩種敘事</h3><p>單角色沉浸與世界模擬分開處理，不再把所有規則塞進同一張卡。</p></article>
+          <article><span>03</span><h3>玩家 Persona</h3><p>玩家可自訂名稱、性別、身分與關係，讓 AI 更清楚自己正在面對誰。</p></article>
+          <article><span>04</span><h3>成本透明</h3><p>後續加入 Context、Token、快取與費用統計，不讓玩家盲目燒錢。</p></article>
         </div>
-    </div>
-</div>
+      </section>
 
-<script>
-    const characterFiles = ['linchenfeng.json'];
-    let loadedCharacters = {};
-    let activeChar = null;
+      <section id="explore-view" class="view">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">ORIGINAL CHARACTERS</div>
+            <h2>探索作品</h2>
+          </div>
+          <div class="filters">
+            <button class="filter active" data-filter="all">全部</button>
+            <button class="filter" data-filter="male">男性向</button>
+            <button class="filter" data-filter="female">女性向</button>
+            <button class="filter" data-filter="world">世界模擬</button>
+            <button class="filter" data-filter="adult">18+</button>
+          </div>
+        </div>
+        <div id="character-list" class="character-grid"></div>
+      </section>
 
-    window.onload = async () => {
-        const listContainer = document.getElementById('character-list');
-        for (let file of characterFiles) {
-            try {
-                const res = await fetch(file);
-                const char = await res.json();
-                loadedCharacters[char.id] = char;
-                
-                listContainer.innerHTML += `
-                    <div class="card" onclick="openCharacter('${char.id}')">
-                        <img src="${char.avatar}" class="card-img">
-                        <div class="card-body">
-                            <h3 style="margin:0 0 5px 0;">${char.name}</h3>
-                            <div style="margin-bottom:10px;">${char.tags.map(t => `<span class="tag">#${t}</span>`).join('')}</div>
-                            <p style="font-size:12px; color:var(--muted); margin:0; line-height:1.5;">${char.description}</p>
-                        </div>
-                    </div>
-                `;
-            } catch (e) { console.error("角色載入失敗:", file); }
-        }
-    };
+      <section id="detail-view" class="view">
+        <button class="back-link" data-view="explore">← 返回作品</button>
+        <div id="character-detail"></div>
+      </section>
 
-    function openCharacter(id) {
-        activeChar = loadedCharacters[id];
-        document.getElementById('lobby-view').style.display = 'none';
-        document.getElementById('chat-view').style.display = 'block';
-        document.getElementById('chat-stream').innerHTML = `<div style="margin-bottom:15px;">${activeChar.greeting}</div>`;
-    }
+      <section id="builder-view" class="view">
+        <button class="back-link" onclick="App.showCharacterDetail()">← 返回角色</button>
 
-    function showLobby() {
-        document.getElementById('chat-view').style.display = 'none';
-        document.getElementById('lobby-view').style.display = 'block';
-    }
+        <div class="builder-header">
+          <div>
+            <div class="eyebrow">STORY SETUP</div>
+            <h2>建立你的故事</h2>
+          </div>
+          <div id="builder-character-chip" class="character-chip"></div>
+        </div>
 
-    async function sendMessage() {
-        const input = document.getElementById('user-input');
-        const key = document.getElementById('user-key').value.trim();
-        const model = document.getElementById('model-select').value;
-        const text = input.value.trim();
+        <div class="stepper">
+          <button class="step active" data-step="1">1 <span>模式</span></button>
+          <button class="step" data-step="2">2 <span>Persona</span></button>
+          <button class="step" data-step="3">3 <span>API</span></button>
+          <button class="step" data-step="4">4 <span>記憶</span></button>
+        </div>
 
-        if (!text) return;
-        if (!key) { alert('請填入您的 API Key！'); return; }
+        <div class="builder-card">
+          <section class="builder-step active" data-step-panel="1">
+            <h3>選擇體驗方式</h3>
+            <div class="mode-grid">
+              <label class="choice-card selected">
+                <input type="radio" name="play-mode" value="immersive" checked />
+                <span class="choice-icon">◐</span>
+                <b>單角色沉浸</b>
+                <small>聚焦角色與玩家之間的情緒、互動、停頓與關係發展。</small>
+              </label>
+              <label class="choice-card">
+                <input type="radio" name="play-mode" value="world" />
+                <span class="choice-icon">◎</span>
+                <b>世界模擬</b>
+                <small>NPC、事件與環境持續運轉，玩家沒有動作時世界仍會前進。</small>
+              </label>
+            </div>
+          </section>
 
-        const stream = document.getElementById('chat-stream');
-        stream.innerHTML += `<div style="text-align:right; margin:15px 0;"><span style="background:#27272a; padding:8px 12px; border-radius:6px; font-size:14px;">${text}</span></div>`;
-        input.value = '';
+          <section class="builder-step" data-step-panel="2">
+            <h3>你的角色</h3>
+            <div class="form-grid">
+              <label>名稱<input id="persona-name" placeholder="例如：夏羽" /></label>
+              <label>性別
+                <select id="persona-gender">
+                  <option value="未指定">未指定</option>
+                  <option value="女性">女性</option>
+                  <option value="男性">男性</option>
+                  <option value="其他">其他</option>
+                </select>
+              </label>
+              <label>身分 / 職業<input id="persona-identity" placeholder="例如：出版社編輯" /></label>
+              <label>與角色的初始關係<input id="persona-relationship" placeholder="例如：多年朋友" /></label>
+              <label class="wide">個性<textarea id="persona-personality" placeholder="簡短描述你的個性"></textarea></label>
+              <label class="wide">其他設定<textarea id="persona-extra" placeholder="外貌、背景、禁忌或其他補充"></textarea></label>
+            </div>
+          </section>
 
-        try {
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${key}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    model: model,
-                    messages: [
-                        { role: "system", content: activeChar.system_prompt },
-                        { role: "user", content: text }
-                    ]
-                })
-            });
-            const data = await response.json();
-            const reply = data.choices[0].message.content;
+          <section class="builder-step" data-step-panel="3">
+            <h3>選擇 AI</h3>
+            <div class="form-grid">
+              <label>API 類型
+                <select id="api-type">
+                  <option value="openrouter">OpenRouter</option>
+                  <option value="openai">OpenAI 官方</option>
+                  <option value="anthropic">Anthropic 官方</option>
+                  <option value="gemini">Gemini 官方</option>
+                  <option value="custom">OpenAI Compatible / 自訂中轉</option>
+                </select>
+              </label>
+              <label>模型<input id="model-name" value="openai/gpt-4o-mini" /></label>
+              <label class="wide" id="base-url-wrap">Base URL<input id="base-url" value="https://openrouter.ai/api/v1/chat/completions" /></label>
+              <label class="wide">API Key<input id="api-key" type="password" placeholder="sk-..." /></label>
+            </div>
+            <p class="privacy-note">🔒 目前版本不會把金鑰寫進角色檔；正式版會以本機儲存與可選代理架構處理。</p>
+          </section>
 
-            stream.innerHTML += `<div style="text-align:left; margin:15px 0;">${reply}</div>`;
-            stream.scrollTop = stream.scrollHeight;
-        } catch (e) {
-            alert('API 連線失敗，請檢查 Key 是否正確。');
-        }
-    }
-</script>
+          <section class="builder-step" data-step-panel="4">
+            <h3>記憶與費用</h3>
+            <div class="form-grid">
+              <label>記憶模式
+                <select id="memory-mode">
+                  <option value="smart">智慧模式（推薦）</option>
+                  <option value="rounds">固定輪數</option>
+                  <option value="full">完整上下文</option>
+                </select>
+              </label>
+              <label>最近保留輪數<input id="max-rounds" type="number" min="4" max="100" value="20" /></label>
+              <label>最大 Context<input id="max-context" type="number" value="64000" /></label>
+              <label class="toggle-label"><span>Prompt Cache</span><input id="cache-enabled" type="checkbox" checked /></label>
+            </div>
+            <div class="cost-preview">
+              <span>目前設定</span>
+              <b>角色 + Persona + 模式 + 最近對話</b>
+              <small>Token 與實際費用統計會在下一版接入。</small>
+            </div>
+          </section>
 
+          <div class="builder-actions">
+            <button id="prev-step" class="secondary" onclick="App.prevStep()">上一步</button>
+            <button id="next-step" class="primary" onclick="App.nextStep()">下一步</button>
+            <button id="start-story" class="primary hidden" onclick="App.startStory()">進入故事</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="chat-view" class="view">
+        <div class="chat-layout">
+          <aside class="chat-sidebar">
+            <button class="back-link" onclick="App.exitChat()">← 離開故事</button>
+            <div id="chat-character-card"></div>
+            <div class="sidebar-block">
+              <span>遊戲模式</span><b id="chat-mode"></b>
+            </div>
+            <div class="sidebar-block">
+              <span>Persona</span><b id="chat-persona"></b>
+            </div>
+            <div class="sidebar-block">
+              <span>模型</span><b id="chat-model"></b>
+            </div>
+            <button class="coffee">☕ 請作者喝咖啡</button>
+          </aside>
+
+          <section class="chat-main">
+            <div class="chat-topline">
+              <div>
+                <div class="eyebrow">LIVE SESSION</div>
+                <h2 id="chat-title">故事</h2>
+              </div>
+              <button class="icon-button" title="設定">⚙</button>
+            </div>
+
+            <div id="chat-stream" class="chat-stream"></div>
+
+            <div class="usage-bar">
+              <span>Context <b id="usage-context">—</b></span>
+              <span>本輪 <b id="usage-turn">—</b></span>
+              <span>Cache <b id="usage-cache">—</b></span>
+              <span>記憶 <b id="usage-memory">0/20</b></span>
+            </div>
+
+            <div class="input-area">
+              <textarea id="user-input" placeholder="輸入你的行動、對話或想法..."></textarea>
+              <button class="primary send" onclick="App.sendMessage()">發送</button>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="about-view" class="view">
+        <div class="about-wrap">
+          <div class="eyebrow">ABOUT THE CREATOR</div>
+          <h2>關於班長 / 肉包</h2>
+          <p class="about-lead">我不是從「我要做 AI 平台」開始的。一開始，只是做角色卡，然後不停遇到問題。</p>
+          <div class="about-copy">
+            <p>角色為什麼聊久了會忘記？NPC 為什麼沒有自己的生活？世界為什麼一定要等玩家下指令才會動？</p>
+            <p>所以我開始改提示詞、測試長篇互動、研究世界書、HTML、角色記憶與 NPC 自主性。這裡放的，就是一路測試、翻車，再重新做出來的作品。</p>
+            <p>BAO/LAB 想做的不是綁住玩家，而是把角色、世界與模型選擇權交回使用者手上。</p>
+          </div>
+          <div class="creator-links">
+            <span>方格子：班長</span>
+            <span>LunaTalk：肉包</span>
+            <span>作品方向：角色卡 / 世界模擬 / 長篇敘事 / HTML</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>BAO/LAB</span>
+      <p>你的 API，你的選擇，你的帳單。</p>
+      <button class="coffee">☕ 請作者喝咖啡</button>
+    </footer>
+  </div>
+
+  <script src="js/app.js"></script>
 </body>
 </html>
